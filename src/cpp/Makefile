@@ -2,7 +2,7 @@ CC = g++
 CFLAGS  = -g -std=c++11 -ffast-math -O3 -funroll-loops -Wall `pkg-config --cflags opencv`
 LIBS = `pkg-config --libs opencv`
 
-default: clean monospace
+default: clean monospace obj_rm
 
 
 monospace:  oflow.o ocvio.o
@@ -24,3 +24,6 @@ ocvio.o: ocvio.cpp ocvio.hpp
 
 clean: 
 	$(RM) monospace *.o *~
+
+obj_rm:
+	$(RM) *.o
