@@ -6,7 +6,6 @@
 #include <iostream>
 #include <thread>
 #include <mutex>
-//#include <vector>
 #include "ocvio.hpp"
 
 using namespace cv;
@@ -16,7 +15,8 @@ using namespace std;
 
 int main(int argc, char** argv)
 {
-	VideoCapture cap("../../data/video_4.mp4");
+	cout << "Gonna try flowing " << argv[1];
+	VideoCapture cap(argv[1]);
 	if(!cap.isOpened())
 		return -1;
 

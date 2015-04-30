@@ -52,12 +52,11 @@ void FlowTracker::push_frame(Mat new_frame)
 
 	frame = new_frame.clone();
 
-//	status.insert(status.end(),max_pts-status.size(),0);
-//	points.insert(points.end(),max_pts-points.size(),Point2f(0,0));
-
 	t1.join();
 }
 
+
+/* get_transformation: find the 2d transformation between frames. */
 void FlowTracker::get_transformation(std::vector<cv::Point2f> p1, std::vector<int> status1, std::vector<cv::Point2f> p2, std::vector<int> status2)
 {
 	vector<Point2f> P,Q;
@@ -73,7 +72,8 @@ void FlowTracker::get_transformation(std::vector<cv::Point2f> p1, std::vector<in
 		}
 	Mat cent1 = Mat(cent1_p)*(1.0/count_1);
 	Mat cent2 = Mat(cent2_p)*(1.0/count_1);
-	// 2. calculate the 2x2 covariance matrix
+
+	// 2. calculate the 2x2 covariance matrix (subtract centroids)
 	Mat H(2,2,CV_32FC1);
 	size_t count_2 = 0;
 	for(size_t i = 0;i<p1.size() && i < p2.size();i++)
@@ -81,17 +81,20 @@ void FlowTracker::get_transformation(std::vector<cv::Point2f> p1, std::vector<in
 			H = H + (Mat(p1[count_2])-cent1)*(Mat(p2[count_2++])-cent2).t();
 		}
 
+	// 3. Find the SVD of the covariance matrix
 	Mat a(2,2,CV_32FC1),
 		b(2,2,CV_32FC1),
 		c(2,2,CV_32FC1);
 	SVD::compute(H,a,b,c);
+
+	// 4. The 2d rotation between frames which minimizes the l2 norm between frames is c*b^T. 
 	Mat R(2,2,CV_32FC1);
 	R = c*(b.t());
+
+	// 5. Take the arctan of two components of the rotation matrix to get the angle (and store the angle).
 	float delta_phi = atan(R.at<float>(0,1)/R.at<float>(0,0));
-//	cout << R << endl << R.at<float>(0,1) << endl << R.data[1] << endl << R.data[2] << endl << R.data[3] << endl;
-	cout << delta_phi << endl;
-//	cout << Mat(P)*Mat(Q).t();
-		
+
+	cout << "delta phi is "<< delta_phi << endl;
 }
 
 void FlowTracker::get_points(Mat new_frame)
@@ -123,4 +126,3 @@ void FlowTracker::get_points(Mat new_frame)
 		point_mutex.unlock();
 	}
 }
-
