@@ -2,19 +2,19 @@
 #include <stdlib.h>
 #include <stdint.h>
 
-#include "config.h"
-#include "image_proc.h"
+#include "msp_config.h"
+#include "msp_buffer.h"
 
 short table_yuv_rgb[256][256][3];
 int yuv_rgb_exists = 0;
 
-void init_buffer(buffer *b, size_t b_len)
+void msp_buffer_init(msp_buffer *b, size_t b_len)
 {
 	b->length = b_len;
 	b->start = calloc(b_len,sizeof(uint8_t));
 }
 
-void kill_buffer(buffer *b)
+void msp_buffer_kill(msp_buffer *b)
 {
 	free(b->start);
 }
@@ -40,7 +40,25 @@ static inline uint8_t short_to_uint8(short s)
 	else return (uint8_t)s;
 }
 
-void yuy2_to_rgb (buffer *buf_in, buffer *buf_out)
+void msp_buffer_copy(msp_buffer* src, msp_buffer* dst){
+
+}
+
+void msp_buffer_addto(msp_buffer* buf_1, msp_buffer* buf_2) 
+{
+	if(buf_1->length != buf_2->length)
+		return;
+	
+	uint8_t *b1 = (uint8_t *)buf_1->start;
+	uint8_t *b2 = (uint8_t *)buf_2->start;
+	
+	int i;
+	for(i=0; i<buf_1->length; i++){
+		b1[i] = b1[i]/2 + b2[i]/2;
+	}
+}
+
+void msp_buffer_yuy2_to_rgb (msp_buffer *buf_in, msp_buffer *buf_out)
 {
 	/* Byte ordering:
 	0  1  2  3   |  4  5  6  7    
@@ -97,7 +115,7 @@ void yuy2_to_rgb (buffer *buf_in, buffer *buf_out)
 	}
 }
 
-void yuy2_to_gs(buffer *buf_in, buffer *buf_out)
+void msp_buffer_yuy2_to_gs8(msp_buffer *buf_in, msp_buffer *buf_out)
 {
 	size_t i;
 	uint8_t *b1 = (uint8_t *)(buf_in->start);
