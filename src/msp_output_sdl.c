@@ -43,6 +43,7 @@ int msp_output_sdl_show_yy(msp_buffer *b, const char *name)
 }
 int msp_output_sdl_show_gs8(msp_buffer *b, const char *name)
 {
+        printf("sdl %d\n",b);
 	atexit(SDL_Quit);
 	if(SDL_Init(SDL_INIT_VIDEO) < 0)
 		return -1;

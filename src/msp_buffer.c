@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <string.h>
 
 #include "msp_config.h"
 #include "msp_buffer.h"
@@ -42,6 +43,27 @@ static inline uint8_t short_to_uint8(short s)
 
 void msp_buffer_copy(msp_buffer* src, msp_buffer* dst){
 
+}
+
+void msp_buffer_addshapes(msp_buffer* dst, msp_shape* shapes, size_t n_shapes){
+    msp_shape s;
+    size_t i,k,y;
+    size_t tmp1, tmp2;
+    for(i=0; i < n_shapes; i++) {
+        s = shapes[i];
+        switch( s.shape )
+        {
+            case SHAPE_RECTANGLE:
+                tmp2 = s.coord_y + s.size_y;
+                if(tmp1 > CAM_WIDTH) tmp1 = CAM_WIDTH;
+                if(tmp2 > CAM_HEIGHT) tmp2 = CAM_HEIGHT;
+                for( k=s.coord_x*CAM_WIDTH+s.coord_y ; k < tmp2*CAM_WIDTH+s.coord_y; k += CAM_WIDTH)
+                    memset(dst->start+k,0,s.size_x);
+                break;
+            default:
+                break;
+        }
+    }
 }
 
 void msp_buffer_addto(msp_buffer* buf_1, msp_buffer* buf_2) 
